@@ -1,25 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.config.GlobalMessageSource;
+import com.example.demo.exception.QuestionNotFoundException;
+import com.example.demo.model.FAQ;
+import com.example.demo.repository.FAQRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.catalina.LifecycleListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.model.FAQ;
-import com.example.demo.repository.FAQRepository;
+import static com.example.demo.exception.ErrorConstants.QUESTION_NOT_FOUND;
 
 
 @RestController
@@ -29,15 +20,18 @@ public class FAQAPIService {
 	
 	@Autowired
 	FAQRepository faqRepo;
-	
+	@Autowired
+	GlobalMessageSource globalMessageSource;
 	
 	@PostMapping("/addFaq")
 	public FAQ Add(@RequestBody FAQ faq)
 	{
+		if(faq.getQuestion().isBlank())
+			throw new QuestionNotFoundException(QUESTION_NOT_FOUND,globalMessageSource.get(QUESTION_NOT_FOUND));
 		faqRepo.save(faq);
 		return faq;
 	}
-	
+
 	@GetMapping("/allFaqs")
 	public List<FAQ> getAllFaqs()
 	{
