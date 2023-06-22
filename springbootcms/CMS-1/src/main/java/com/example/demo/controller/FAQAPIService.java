@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.GlobalMessageSource;
+
 import com.example.demo.exception.QuestionNotFoundException;
 import com.example.demo.model.FAQ;
 import com.example.demo.repository.FAQRepository;
@@ -20,14 +20,12 @@ public class FAQAPIService {
 	
 	@Autowired
 	FAQRepository faqRepo;
-	@Autowired
-	GlobalMessageSource globalMessageSource;
-	
+
 	@PostMapping("/addFaq")
 	public FAQ Add(@RequestBody FAQ faq)
 	{
 		if(faq.getQuestion().isBlank())
-			throw new QuestionNotFoundException(QUESTION_NOT_FOUND,globalMessageSource.get(QUESTION_NOT_FOUND));
+			throw new QuestionNotFoundException(QUESTION_NOT_FOUND,"Question cannot be null or empty");
 		faqRepo.save(faq);
 		return faq;
 	}
